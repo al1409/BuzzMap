@@ -1,0 +1,3 @@
+/* Both avatars share the exact same face and front hair. The female option only
+   adds this separate layer behind the head, so facial proportions never change. */
+.long-hair-back{position:absolute;z-index:-1;left:-3px;right:-3px;top:3px;height:31px;background:var(--hair);border:2px solid #182433;border-radius:12px 12px 9px 9px;box-shadow:inset 0 -4px 0 #0002}

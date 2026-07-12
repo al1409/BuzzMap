@@ -137,16 +137,6 @@ export default function HomePage() {
   const currentPos = journeyPositions[Math.max(0,currentIndex)];
 
   useEffect(() => { localStorage.setItem("first-flight-state", JSON.stringify({version:2,currentLevel,emailCursor,tasks,sideMissions,avatarColor,accessory,onboarded,guideDismissed,avatarType,skin,hair,merchItems,studentName,major})); }, [currentLevel,emailCursor,tasks,sideMissions,avatarColor,accessory,onboarded,guideDismissed,skin,hair,merchItems,studentName,major]);
-  useEffect(() => {
-    const handleKeyboardMission = (event: KeyboardEvent) => {
-      const target = event.target as HTMLElement | null;
-      if (event.key.toLowerCase() !== "n" || target?.matches("input, textarea, select, [contenteditable='true']")) return;
-      event.preventDefault();
-      document.getElementById("next-mission-control")?.click();
-    };
-    window.addEventListener("keydown", handleKeyboardMission);
-    return () => window.removeEventListener("keydown", handleKeyboardMission);
-  }, []);
   function chooseReward(item:string) { setMerchItems(current=>[...current.filter(x=>!(merchCoupons[celebrate||0]||[]).includes(x)),item]); setPreviewReward(item); setClaimedReward(item); setToast(`Free ${item} coupon claimed!`); setTimeout(()=>setToast(""),2800); }
   function continueToNextLevel() { const next=level+1;if(next===2){setCurrentLevel(2);setTasks(level2Tasks);setEmailCursor(5)}else if(next===3){setCurrentLevel(3);setTasks(level3Tasks);setEmailCursor(8)}else{setFinalReady(true)}setCelebrate(null);setClaimedReward("");setPreviewReward("");setShowMerch(false);if(next<=3){setToast(`Level ${next} · ${next===2?"Academic Takeoff":"Welcome Home"} unlocked!`);setTimeout(()=>setToast(""),3000)}}
   function resumeCompletedLevel() { if(levelRewardClaimed){if(level===3)setFinalReady(true);else continueToNextLevel()}else{setClaimedReward("");setPreviewReward("");setCelebrate(level+1)} }
@@ -164,15 +154,15 @@ export default function HomePage() {
     setTimeout(()=>setToast(""),2600); setEmailPopup(null); setEmailCursor(cursor=>cursor+1);
   }
 
-  function completeTask(task: Task, openDrawer=true) {
+  function completeTask(task: Task) {
     if (task.id.startsWith("side-")) {
       const updatedSide=sideMissions.map(t=>t.id===task.id?{...t,completed:!t.completed}:t);
-      setSideMissions(updatedSide); if(openDrawer)setSelected({...task,completed:!task.completed});
+      setSideMissions(updatedSide); setSelected({...task,completed:!task.completed});
       if(!task.completed){setToast(`+${task.points} bonus XP · Side mission complete!`);setTimeout(()=>setToast(""),2600)}
       return;
     }
     const updated = tasks.map(t => t.id === task.id ? {...t, completed: !t.completed} : t);
-    setTasks(updated); if(openDrawer)setSelected({...task, completed: !task.completed});
+    setTasks(updated); setSelected({...task, completed: !task.completed});
     if (!task.completed) {
       setToast(`+${task.points} XP · Path illuminated!`);
       setTimeout(() => setToast(""), 2600);
@@ -225,7 +215,6 @@ export default function HomePage() {
         <div className="next-reward-card"><span>🎟️</span><div><small>{level===3?"FINAL REWARD":"NEXT REWARD"}</small><b>Free GT Merch Coupon</b><em>{level===1?"Choose a T-shirt, cap, or bottle":level===2?"Choose premium campus gear":"Choose exclusive GT merch"}</em></div></div>
       </div>
       <div className="level-story-bar"><div><small>CURRENT STORY</small><b>Level {level} · {levelTitle}</b></div><div><small>LEVEL PROGRESS</small><b>{completed} / {tasks.length} Missions Complete</b></div>{nextTask?<div className="next-mission-indicator"><small>NEXT MISSION</small><b>{nextTask.title}</b><ChevronRight/></div>:<button className="resume-level" onClick={resumeCompletedLevel}><span><small>{level===3?"JOURNEY COMPLETE":"LEVEL COMPLETE"}</small><b>{level===3?nextLevelLabel:levelRewardClaimed?nextLevelLabel:"Claim rewards to continue"}</b></span><ArrowRight/></button>}</div>
-      <button id="next-mission-control" className="keyboard-mission-control" disabled={!nextTask||Boolean(celebrate)||finalReady||Boolean(emailPopup)||!onboarded||!guideDismissed} onClick={()=>nextTask&&completeTask(nextTask,false)}><span><small>QUICK MISSION CONTROL</small><b>{nextTask?`Complete: ${nextTask.title}`:"All missions complete"}</b></span><em>Press <kbd>N</kbd> or click</em><Check/></button>
 
       {showMerch ? <section className="merch-panel"><div className="merch-panel-head"><div><div className="eyebrow"><span/> YOUR GT MERCH</div><h2>{studentName || "Your"}’s reward closet</h2><p>Complete each level, choose something you love, and watch your collection grow.</p></div><div className="merch-count"><small>REWARDS CLAIMED</small><b>{merchItems.length} / 3</b><span>A new choice waits at every level</span></div></div><div className="merch-showcase">{merchItems.length?merchItems.map((item,i)=><motion.article key={item} initial={{opacity:0,y:18}} animate={{opacity:1,y:0}} transition={{delay:i*.08}}><div>{merchEmoji[item]}</div><small>LEVEL {i+1} REWARD</small><h3>{item}</h3><span>✓ ADDED TO YOUR COLLECTION</span></motion.article>):<div className="empty-merch"><span>🎟️</span><h3>Your merch closet is ready</h3><p>Finish Level 1 and you’ll get to choose your first piece of GT gear.</p><button onClick={()=>setShowMerch(false)}>Back to my journey <ArrowRight/></button></div>}</div><div className="merch-disclaimer"><Sparkles/><p><b>Your rewards, your choice</b>Finish a level, pick your favorite item, and we’ll keep it here in your collection.</p></div></section> : <section className="journey-panel">
         <div className="panel-top"><div><span className="live-dot"/> FLIGHT PATH <small>· FALL 2026</small></div><div className="legend"><span><i className="done"/>Complete</span><span><i className="current"/>Current</span><span><i/>Upcoming</span></div></div>
