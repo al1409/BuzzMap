@@ -203,6 +203,10 @@ export default function HomePage() {
 
   return <main className="app-shell">
     <div className="ambient"><i/><i/><i/><i/></div>
+    <div className="watermark" aria-hidden="true">
+      <span>Alvy Selvin</span>
+      <small>Ignite 2026</small>
+    </div>
     <aside className="sidebar">
       <div className="brand"><div className="brand-mark"><Zap size={19} fill="currentColor"/></div><span>BUZZ<br/><b>MAP</b></span></div>
       <nav><button className={!showMerch?"active":""} onClick={()=>setShowMerch(false)}><Map/><span>Journey</span></button>{level===2&&<button onClick={()=>setShowCopilot(true)}><span className="nav-emoji">🎓</span><span>Copilot</span></button>}<button className={showMerch?"active":""} onClick={()=>setShowMerch(true)}><span className="nav-emoji">👕</span><span>Merch</span></button><button onClick={()=>setShowProfile(true)}><CircleUserRound/><span>Profile</span></button></nav>
