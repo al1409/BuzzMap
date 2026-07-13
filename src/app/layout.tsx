@@ -35,6 +35,15 @@ export const metadata: Metadata = {
   description: "Your personalized map to Georgia Tech onboarding.",
 };
 
+function PersistentWatermark() {
+  return (
+    <div className="watermark" aria-hidden="true">
+      <span>Alvy Selvin</span>
+      <small>Ignite 2026</small>
+    </div>
+  );
+}
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -42,7 +51,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="h-full antialiased">
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <PersistentWatermark />
+        {children}
+      </body>
     </html>
   );
 }
